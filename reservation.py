@@ -53,17 +53,32 @@ The datetime and timedelta classes will be immensely helpful here, as will the s
 
 import sys
 import datetime
+from datetime import datetime
 
 from os.path import exists
 
 def parse_one_record(line):
-    """Take a line from reservations.csv and return a dictionary representing that record. (hint: use the datetime type when parsing the start and end date columns)"""
-    return {}
+    """Take a line from reservations.csv and return a dictionary representing that record. 
+    (hint: use the datetime type when parsing the start and end date columns)"""
+    # (location_id, reservation_start_date, reservation_end_date) -- what to make a key? 
+    # location_id should be a key? value should be (rereservation_start_date, reservation_end_date)?
+    # if value is None, the particular room is available. 
+
+    #noooooooooooo, after consulting with Classic Nick
+    # {(room: 'ID', start_date: '', end_date: '')}
+    # Then create a list of dictionaries. 
+
+    d = {}
+    d['room'] = line[0]
+    # date takes in (year, month, day)
+    d['start_date'] = line[1]
+    d['end_date'] = line[2]
+
+    return d
 
 def read_units(in_file):
     """Read in the file units.csv and returns a list of all known units."""
     known_units = []
-
     f = open(in_file)
 
     # go line by line in units.csv and append each unit as tuple, (location_id, unit_size)
@@ -74,15 +89,33 @@ def read_units(in_file):
             in_file_ended = True
             break
         split_indata = indata.split(', ')
-        split_indata[1] = split_indata[1].strip()
-        # print split_indata
-        known_units.append(tuple(split_indata))
+        # split_indata[1] = split_indata[1].strip()
+        # # print split_indata
+        # known_units.append(tuple(split_indata))
+
+        known_units.append(split_indata[0])
 
     return known_units
 
-def read_existing_reservations():
+def read_existing_reservations(in_file):
     """Reads in the file reservations.csv and returns a list of reservations."""
-    return []
+    reservations = []
+    f = open(in_file)
+
+    in_file_ended = False
+    while not in_file_ended:
+        indata = f.readline()
+        if indata == '':
+            in_file_ended = True
+            break
+        split_indata = indata.split(', ')
+        split_indata[2] = split_indata[2].strip()
+
+        reservation_as_dict = parse_one_record((split_indata[0], split_indata[1], split_indata[2]))
+        reservations.append(reservation_as_dict)
+        # reservations.append((split_indata[0], split_indata[1], split_indata[2]))
+
+    return reservations
 
 def available(units, reservations, start_date, occupants, stay_length):
     unit_id = 0
@@ -105,21 +138,16 @@ def main():
             print "%r does not exist." % f
             return 
 
-    # reservation_line = ""
-    # for i in range(1,len(args)):
-    #     f = open(args[i])
-    #     for j in xrange(200):
-    #         input_text += f.readline()
-
-    # units_
-
-
-
-
-
     units = read_units(args[2])
-    print units
-    reservations = read_existing_reservations()  
+    # print 'units are ', units
+    reservations = read_existing_reservations(args[1])  
+    print 'reservations are ', reservations
+
+    # for reservation in reservations:
+    #     parse_one_record(reservation)
+
+    # print parse_one_record(reservations[0])
+
 
     while True:
         command = raw_input("SeaBnb> ")
@@ -136,3 +164,51 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+"""
+    user@chromebox-003:~/src/skills2$ python
+    Python 2.7.3 (default, Sep 26 2013, 20:03:06) 
+    [GCC 4.6.3] on linux2
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> import datetime
+    >>> today = date.today()
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+    NameError: name 'date' is not defined
+    >>> import time
+    >>> today = date.today()
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+    NameError: name 'date' is not defined
+    >>> from datetime import date
+    >>> today = date.today()
+    >>> today
+    datetime.date(2014, 2, 17)
+    >>> print today
+    2014-02-17
+    >>> date(10/16/2013)
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+    TypeError: Required argument 'month' (pos 2) not found
+    >>> date(10,16,2013)
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+    ValueError: month must be in 1..12
+    >>> date(2013,12,13)
+    datetime.date(2013, 12, 13)
+    >>> n = date(2013,12,13)
+    >>> print n
+    2013-12-13
+    >>> print n > today
+    False
+    >>> print n < today
+    True
+
+
+class datetime.date(year, month, day)
+class datetime.datetime(year, month, day[, hour[, minute[, second[, microsecond[, tzinfo]]]]])
+
+"""
