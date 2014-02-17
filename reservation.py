@@ -44,8 +44,10 @@ Unit 10 is unavailable during those dates
 SeaBnb> quit
 
 Notes:
-Start first by writing the functions to read in the csv file. These have been stubbed for you. Then write the availability function, then reservation. 
-Test your program at each step (it may be beneficial to write tests in a separate file.) Use the 'reservations' variable as your database. 
+Start first by writing the functions to read in the csv file. These have been stubbed for you. 
+Then write the availability function, then reservation. 
+Test your program at each step (it may be beneficial to write tests in a separate file.) 
+Use the 'reservations' variable as your database. 
 Store all the reservations in there, including the ones from the new ones you will create.
 
 The datetime and timedelta classes will be immensely helpful here, as will the strptime function.
@@ -68,11 +70,30 @@ def parse_one_record(line):
     # {(room: 'ID', start_date: '', end_date: '')}
     # Then create a list of dictionaries. 
 
+
+    # format the reservation as a tuple, (unit_ID, start, end)
+    split_line = line.split(', ')
+    split_line[2] = split_line[2].strip()
+
+    # dates = split_line[1:]
+    # need to iterate over the last two items in the split_line list, which are dates
+    for date in range(len(split_line[1:]) + 1)[1:]:
+
+        # split the date on '/'
+        split_line[date] = split_line[date].split('/')
+
+        # need to formate as year, month, date
+        date_reformatted = [split_line[date][2], split_line[date][0], split_line[date][1]]
+        split_line[date] = tuple(date_reformatted)
+        # print 'date is ', split_line
+
     d = {}
-    d['room'] = line[0]
+    d['room'] = split_line[0]
     # date takes in (year, month, day)
-    d['start_date'] = line[1]
-    d['end_date'] = line[2]
+    # need correct formatting to use datetime 
+    
+    d['start_date'] = split_line[1]
+    d['end_date'] = split_line[2]
 
     return d
 
@@ -93,12 +114,14 @@ def read_units(in_file):
         # # print split_indata
         # known_units.append(tuple(split_indata))
 
+        # we just want a list of the units - don't need size
         known_units.append(split_indata[0])
 
     return known_units
 
 def read_existing_reservations(in_file):
     """Reads in the file reservations.csv and returns a list of reservations."""
+    # reservations is a list of dictionaries 
     reservations = []
     f = open(in_file)
 
@@ -108,24 +131,23 @@ def read_existing_reservations(in_file):
         if indata == '':
             in_file_ended = True
             break
-        split_indata = indata.split(', ')
-        split_indata[2] = split_indata[2].strip()
 
-        reservation_as_dict = parse_one_record((split_indata[0], split_indata[1], split_indata[2]))
+        # feed tuple into function to change it into a dictionary, 
+        # {(room: 'ID', start_date: '', end_date: '')}
+        reservation_as_dict = parse_one_record(indata)
+        # append to list of reservations
         reservations.append(reservation_as_dict)
-        # reservations.append((split_indata[0], split_indata[1], split_indata[2]))
 
     return reservations
 
 def available(units, reservations, start_date, occupants, stay_length):
     unit_id = 0
-    print "Unit %d is available"%unit_id
+    print "Unit %d is available" % unit_id
 
 def reserve(units, reservations, unit_id, start_date, stay_length):
     print "Successfully reserved"
 
 def main():
-
     args = sys.argv    
 
     # Ensure proper files given. 
@@ -142,12 +164,6 @@ def main():
     # print 'units are ', units
     reservations = read_existing_reservations(args[1])  
     print 'reservations are ', reservations
-
-    # for reservation in reservations:
-    #     parse_one_record(reservation)
-
-    # print parse_one_record(reservations[0])
-
 
     while True:
         command = raw_input("SeaBnb> ")
