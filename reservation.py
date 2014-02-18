@@ -12,7 +12,8 @@ location_id, reservation_start_date, reservation_end_date
 You will write a simple application that manages a reservation system. It will have two commands, 'available' and 'reserve' with the following behaviors:
 
 available <date> <number of occupants> <length of stay>
-This will print all available units that match the criteria. Any unit with capacity equal or greater to the number of occupants will be printed out.
+This will print all available units that match the criteria. 
+Any unit with capacity equal or greater to the number of occupants will be printed out.
 
 Example:
 SeaBnb> available 10/10/2013 2 4
@@ -60,7 +61,10 @@ from os.path import exists
 
 def parse_one_record(line):
     """Take a line from reservations.csv and return a dictionary representing that record. 
-    (hint: use the datetime type when parsing the start and end date columns)"""
+    (hint: use the datetime type when parsing the start and end date columns)
+
+    reservations.csv
+    location_id, reservation_start_date, reservation_end_date"""
     # (location_id, reservation_start_date, reservation_end_date) -- what to make a key? 
     # location_id should be a key? value should be (rereservation_start_date, reservation_end_date)?
     # if value is None, the particular room is available. 
@@ -103,7 +107,11 @@ def parse_one_record(line):
     return d
 
 def read_units(in_file):
-    """Read in the file units.csv and returns a list of all known units."""
+    """Read in the file units.csv and returns a list of all known units.
+
+    units.csv
+    location_id, unit_size"""
+
     known_units = []
     f = open(in_file)
 
@@ -147,12 +155,35 @@ def read_existing_reservations(in_file):
     return reservations
 
 def available(units, reservations, start_date, occupants, stay_length):
+    """
+    available <date> <number of occupants> <length of stay>
+    This will print all available units that match the criteria. 
+    Any unit with capacity equal or greater to the number of occupants will be printed out.
+
+    Example:
+    SeaBnb> available 10/10/2013 2 4
+    Unit 10 (Size 3) is available
+    Unit 20 (Size 2) is available
+    """
 
     # convert start_date to datetime type
     start_date = datetime.datetime.strptime(start_date, '%m/%d/%Y')
     # calculate end_date
     end_date = start_date + datetime.timedelta(days = int(stay_length))
     
+
+    # units is a list of tuples, length 2
+    # reservations is a list of dictionaries
+
+    units_of_proper_size = []
+    for unit in units:
+        unit_size = unit[1]
+        if unit_size >= occupants:
+            # add to list of possible units. must check for existing reservation later
+            units_of_proper_size.append(unit)
+
+    # print units_of_proper_size
+
 
     # for unit in units: 
     #     if 
@@ -179,7 +210,7 @@ def main():
     units = read_units(args[2])
     # print 'units are ', units
     reservations = read_existing_reservations(args[1])  
-    print 'reservations are ', reservations
+    # print 'reservations are ', reservations
 
     while True:
         command = raw_input("SeaBnb> ")
