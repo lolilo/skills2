@@ -182,7 +182,7 @@ def available(units, reservations, start_date, occupants, stay_length):
             # add to list of possible units. must check for existing reservation later
             units_of_proper_size.append(unit)
 
-    # print units_of_proper_size
+    print units_of_proper_size
 
 
     # for unit in units: 
