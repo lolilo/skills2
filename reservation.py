@@ -55,7 +55,6 @@ The datetime and timedelta classes will be immensely helpful here, as will the s
 
 import sys
 import datetime
-from datetime import datetime
 
 from os.path import exists
 
@@ -75,9 +74,9 @@ def parse_one_record(line):
     split_line = line.split(', ')
     split_line[2] = split_line[2].strip()
 
-
+    # datetime data type
     for date in range(len(split_line[1:]) + 1)[1:]:
-        date_as_datetime_datatype = datetime.strptime(split_line[date], '%m/%d/%Y')
+        date_as_datetime_datatype = datetime.datetime.strptime(split_line[date], '%m/%d/%Y')
         split_line[date] = date_as_datetime_datatype
     # print split_line
 
@@ -149,9 +148,11 @@ def read_existing_reservations(in_file):
 
 def available(units, reservations, start_date, occupants, stay_length):
 
-    end_date = datetime(start_date) + datetime(stay_length)
-    print start_date
-    print end_date
+    # convert start_date to datetime type
+    start_date = datetime.datetime.strptime(start_date, '%m/%d/%Y')
+    # calculate end_date
+    end_date = start_date + datetime.timedelta(days = int(stay_length))
+    
 
     # for unit in units: 
     #     if 
@@ -282,6 +283,9 @@ False
 
 # THIS IS THE DATETIME DATA TYPE. SHIT. 
 
+Date = datetime.datetime.strptime(StartDate, "%m/%d/%y")
+
+EndDate = Date + datetime.timedelta(days=10)
 
 
 
