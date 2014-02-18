@@ -66,7 +66,7 @@ def parse_one_record(line):
     # location_id should be a key? value should be (rereservation_start_date, reservation_end_date)?
     # if value is None, the particular room is available. 
 
-    #noooooooooooo, after consulting with Classic Nick
+    # noooooooooooo, after consulting with Classic Nick
     # {(room: 'ID', start_date: '', end_date: '')}
     # Then create a list of dictionaries. 
 
@@ -75,25 +75,31 @@ def parse_one_record(line):
     split_line = line.split(', ')
     split_line[2] = split_line[2].strip()
 
-    # dates = split_line[1:]
-    # need to iterate over the last two items in the split_line list, which are dates
+
     for date in range(len(split_line[1:]) + 1)[1:]:
+        date_as_datetime_datatype = datetime.strptime(split_line[date], '%m/%d/%Y')
+        split_line[date] = date_as_datetime_datatype
+    # print split_line
 
-        # split the date on '/'
-        split_line[date] = split_line[date].split('/')
+    # need to iterate over the last two items in the split_line list, which are dates
+    # for date in range(len(split_line[1:]) + 1)[1:]:
 
-        # need to formate as year, month, date
-        date_reformatted = [split_line[date][2], split_line[date][0], split_line[date][1]]
-        split_line[date] = tuple(date_reformatted)
-        # print 'date is ', split_line
+    #     # split the date on '/'
+    #     split_line[date] = split_line[date].split('/')
+
+    #     # date takes in year, month, day parameters
+    #     # need correct formatting to use datetime 
+    #     date_reformatted = [split_line[date][2], split_line[date][0], split_line[date][1]]
+    #     split_line[date] = tuple(date_reformatted)
+    #     # print 'date is ', split_line
 
     d = {}
     d['room'] = split_line[0]
-    # date takes in (year, month, day)
-    # need correct formatting to use datetime 
-    
     d['start_date'] = split_line[1]
     d['end_date'] = split_line[2]
+
+    # {'room': '1', 'end_date': datetime.datetime(2014, 1, 9, 0, 0), 
+    # 'start_date': datetime.datetime(2014, 1, 1, 0, 0)}
 
     return d
 
@@ -110,12 +116,13 @@ def read_units(in_file):
             in_file_ended = True
             break
         split_indata = indata.split(', ')
-        # split_indata[1] = split_indata[1].strip()
-        # # print split_indata
-        # known_units.append(tuple(split_indata))
+        split_indata[1] = split_indata[1].strip()
+        # print split_indata
+        known_units.append(tuple(split_indata))
 
         # we just want a list of the units - don't need size
-        known_units.append(split_indata[0])
+        # no, that's poor word choice
+        # known_units.append(split_indata[0])
 
     return known_units
 
@@ -141,6 +148,14 @@ def read_existing_reservations(in_file):
     return reservations
 
 def available(units, reservations, start_date, occupants, stay_length):
+
+    end_date = datetime(start_date) + datetime(stay_length)
+    print start_date
+    print end_date
+
+    # for unit in units: 
+    #     if 
+
     unit_id = 0
     print "Unit %d is available" % unit_id
 
@@ -213,6 +228,8 @@ if __name__ == "__main__":
     Traceback (most recent call last):
       File "<stdin>", line 1, in <module>
     ValueError: month must be in 1..12
+
+
     >>> date(2013,12,13)
     datetime.date(2013, 12, 13)
     >>> n = date(2013,12,13)
@@ -228,3 +245,45 @@ class datetime.date(year, month, day)
 class datetime.datetime(year, month, day[, hour[, minute[, second[, microsecond[, tzinfo]]]]])
 
 """
+"""
+d = '2/2/2013'
+datetime.datetime.strptime(d, '%m/%d/%Y')
+datetime.datetime(2013, 2, 2, 0, 0)
+
+>>> haha = datetime.datetime.strptime(d, '%m/%d/%Y')
+>>> haha
+datetime.datetime(2013, 2, 2, 0, 0)
+>>> haha.strftime(new)
+'2013-02-02'
+
+
+
+>>> format
+'2013-02-02'
+>>> type(format)
+<type 'str'>
+>>> format > 2012-02-02
+True
+>>> format > 2013-02-03
+True
+>>> 
+
+
+>>> from datetime import datetime
+>>> datetime.now()
+datetime.datetime(2014, 2, 17, 17, 4, 41, 529036)
+>>> haha
+datetime.datetime(2013, 2, 2, 0, 0)
+>>> haha > datetime.now()
+False
+>>> type(haha)
+<type 'datetime.datetime'>
+
+
+# THIS IS THE DATETIME DATA TYPE. SHIT. 
+
+
+
+
+"""
+
